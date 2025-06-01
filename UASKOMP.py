@@ -157,18 +157,26 @@ if not data.empty:
     st.subheader("Price Statistics")
     col1, col2, col3, col4 = st.columns(4)
     
-    with col1:
-            if not data.empty and 'Close' in data.columns and pd.notnull(data['Close'].iloc[-1]):
-                st.metric("Current Price", f"${data['Close'].iloc[-1]:.2f}")
-else:
+with col1:
+    if not data.empty and 'Close' in data.columns and pd.notnull(data['Close'].iloc[-1]):
+        st.metric("Current Price", f"${data['Close'].iloc[-1]:.2f}")
+    else:
         st.warning("Data tidak tersedia atau nilai 'Close' tidak valid.")
-    with col2:
-        st.metric("52W High", f"${data['High'].max():.2f}")
-    with col3:
-        st.metric("52W Low", f"${data['Low'].min():.2f}")
-    with col4:
+
+with col2:
+    st.metric("52W High", f"${data['High'].max():.2f}")
+
+with col3:
+    st.metric("52W Low", f"${data['Low'].min():.2f}")
+
+with col4:
+    if not data.empty and 'Close' in data.columns:
         price_change = data['Close'].iloc[-1] - data['Close'].iloc[0]
-        st.metric("1Y Change", f"${price_change:.2f}", f"{(price_change/data['Close'].iloc[0]*100):.1f}%")
+        percentage_change = (price_change / data['Close'].iloc[0]) * 100
+        st.metric("1Y Change", f"${price_change:.2f}", f"{percentage_change:.1f}%")
+    else:
+        st.warning("Data tidak cukup untuk menghitung perubahan harga.")
+
 
 st.markdown("""
 ## Penjelasan Data
