@@ -158,10 +158,18 @@ if not data.empty:
     col1, col2, col3, col4 = st.columns(4)
     
 with col1:
-    if not data.empty and 'Close' in data.columns and not pd.isna(data['Close'].iloc[-1]):
-        st.metric("Current Price", f"${data['Close'].iloc[-1]:.2f}")
+    if not data.empty and 'Close' in data.columns:
+        try:
+            last_close = data['Close'].iloc[-1]
+            if pd.notna(last_close):
+                st.metric("Current Price", f"${last_close:.2f}")
+            else:
+                st.warning("Nilai 'Close' terakhir adalah NaN.")
+        except Exception as e:
+            st.warning(f"Gagal membaca nilai terakhir dari 'Close': {e}")
     else:
-        st.warning("Data tidak tersedia atau nilai 'Close' tidak valid.")
+        st.warning("Data tidak tersedia atau kolom 'Close' tidak ditemukan.")
+
 
 with col2:
     st.metric("52W High", f"${data['High'].max():.2f}")
