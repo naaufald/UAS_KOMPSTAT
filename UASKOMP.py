@@ -158,7 +158,10 @@ if not data.empty:
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Current Price", f"${data['Close'].iloc[-1]:.2f}")
+            if not data.empty and 'Close' in data.columns and pd.notnull(data['Close'].iloc[-1]):
+                st.metric("Current Price", f"${data['Close'].iloc[-1]:.2f}")
+else:
+        st.warning("Data tidak tersedia atau nilai 'Close' tidak valid.")
     with col2:
         st.metric("52W High", f"${data['High'].max():.2f}")
     with col3:
