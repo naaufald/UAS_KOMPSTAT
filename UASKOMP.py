@@ -157,33 +157,56 @@ if not data.empty:
     st.subheader("Price Statistics")
     col1, col2, col3, col4 = st.columns(4)
     
-with col1:
-    if not data.empty and 'Close' in data.columns:
+if not data.empty:
+    with col1:
         try:
-            last_close = data['Close'].iloc[-1]
+            last_close = data.iloc[-1]['Close']
             if pd.notna(last_close):
                 st.metric("Current Price", f"${last_close:.2f}")
             else:
                 st.warning("Nilai 'Close' terakhir adalah NaN.")
         except Exception as e:
             st.warning(f"Gagal membaca nilai terakhir dari 'Close': {e}")
-    else:
-        st.warning("Data tidak tersedia atau kolom 'Close' tidak ditemukan.")
 
+    with col2:
+        try:
+            if 'High' in data.columns:
+                high_val = data['High'].max()
+                if pd.notna(high_val):
+                    st.metric("52W High", f"${high_val:.2f}")
+                else:
+                    st.warning("Nilai maksimum 'High' tidak valid.")
+            else:
+                st.warning("Kolom 'High' tidak ditemukan.")
+        except Exception as e:
+            st.warning(f"Error saat menghitung 'High': {e}")
 
-with col2:
-    st.metric("52W High", f"${data['High'].max():.2f}")
+    with col3:
+        try:
+            if 'Low' in data.columns:
+                low_val = data['Low'].min()
+                if pd.notna(low_val):
+                    st.metric("52W Low", f"${low_val:.2f}")
+                else:
+                    st.warning("Nilai minimum 'Low' tidak valid.")
+            else:
+                st.warning("Kolom 'Low' tidak ditemukan.")
+        except Exception as e:
+            st.warning(f"Error saat menghitung 'Low': {e}")
 
-with col3:
-    st.metric("52W Low", f"${data['Low'].min():.2f}")
+    with col4:
+        try:
+            if 'Close' in data.columns and len(data['Close']) >= 2:
+                price_change = data['Close'].iloc[-1] - data['Close'].iloc[0]
+                percent_change = (price_change / data['Close'].iloc[0]) * 100
+                st.metric("1Y Change", f"${price_change:.2f}", f"{percent_change:.1f}%")
+            else:
+                st.warning("Tidak cukup data untuk menghitung perubahan harga.")
+        except Exception as e:
+            st.warning(f"Error saat menghitung '1Y Change': {e}")
+else:
+    st.warning("Data tidak tersedia.")
 
-with col4:
-    if not data.empty and 'Close' in data.columns:
-        price_change = data['Close'].iloc[-1] - data['Close'].iloc[0]
-        percentage_change = (price_change / data['Close'].iloc[0]) * 100
-        st.metric("1Y Change", f"${price_change:.2f}", f"{percentage_change:.1f}%")
-    else:
-        st.warning("Data tidak cukup untuk menghitung perubahan harga.")
 
 
 st.markdown("""
